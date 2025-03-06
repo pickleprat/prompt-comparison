@@ -1,6 +1,8 @@
 import streamlit as st
 import base64
 
+st.set_page_config(layout="wide") 
+
 def display_pdf(file):
     base64_pdf = base64.b64encode(file.read()).decode("utf-8")
     pdf_display = f'<iframe src="data:application/pdf;base64,{base64_pdf}" width="100%" height="600" type="application/pdf"></iframe>'
@@ -20,9 +22,9 @@ def rag_page():
     st.subheader("Input Prompts")
     col1, col2 = st.columns(2)
     with col1:
-        normal_prompt = st.text_area("User Prompt", height=100, placeholder="Enter your prompt here...")
+        normal_prompt = st.text_area("User Prompt", height=400, placeholder="Enter your prompt here...")
     with col2:
-        engineered_prompt = st.text_area("Engineered Prompt", height=100, placeholder="Engineered prompt will appear here...")
+        engineered_prompt = st.text_area("Engineered Prompt", height=400, placeholder="Engineered prompt will appear here...")
     
     if normal_prompt:
         engineered_prompt = normal_prompt.strip().upper()  
