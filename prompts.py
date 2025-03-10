@@ -18,20 +18,10 @@ You are a [expert-title]. Your goal is to [task].
 ### INSTRUCTIONS ###
 [Break down the task into a clear sequence of steps for the LLM.]
 
-### Name of the first input1 ###
-{{}}
-
-### Name of the second input ###
-{{}}
-
-...
-
-### Name of the Nth input ###  
-{{}}
-
 ### OUTPUT FORMAT ### 
 * Your output should be enclosed within <output></output> tags. 
-[ extra instructions on output formatting] 
+* Within the output tag should be a json dictionary. 
+// additional output details of how the json should be structured. 
 
 ```
 
@@ -40,9 +30,10 @@ You are a [expert-title]. Your goal is to [task].
 2. Rephrase the user's vague request into a clearly defined technical task.
 3. In the DEFINITIONS section, explain any key terms that the LLM must understand.
 4. Break the task into detailed, step-by-step instructions in the INSTRUCTIONS section.
-5. Identify the required inputs for the task. For each input, create its own section by replacing [INPUT VALUE N] with the input’s name (without brackets) and leave the accompanying curly braces empty for Python f-string formatting.
-6. **Do not add any extra input placeholders** beyond those explicitly provided in the USER TASK.
 
 ### USER TASK ###
 {}
+
+### OUTPUT THE PROMPT SHOULD PROVIDE ### 
+The output should always contain a JSON dictionary
 """
