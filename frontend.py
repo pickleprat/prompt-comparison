@@ -32,13 +32,9 @@ def rag_page():
     
     st.subheader("Input Prompts")
     col1, col2 = st.columns(2)
+
     with col1:
         normal_prompt = st.text_area("User Prompt", height=400, placeholder="Enter your prompt here...")
-    with col2:
-        engineered_prompt = st.text_area("Engineered Prompt", 
-                                         height=400, 
-                                         disabled=True, 
-                                         placeholder=st.session_state.engineered_prompt)
     
     if normal_prompt:
         engineered_prompt = meta_prompt.format(normal_prompt)  
@@ -52,6 +48,12 @@ def rag_page():
 
         # adding code to modify prompt here
         st.session_state.engineered_prompt = response.choices[0].message.content 
+
+    with col2:
+        engineered_prompt = st.text_area("Engineered Prompt", 
+                                         height=400, 
+                                         disabled=True, 
+                                         placeholder=st.session_state.engineered_prompt)
 
     st.subheader("Outputs")
     out_col1, out_col2 = st.columns(2)
@@ -67,6 +69,8 @@ def rag_page():
 def main():
     st.sidebar.title("Navigation")
     page = st.sidebar.radio("Go to", ("PDF Viewer", "RAG with PDF"))
+    if ("engineered_prompt" not in st.session_state) : 
+        st.session_state.engineered_prompt = "Engineered prompt will appear here..."
 
     if page == "PDF Viewer":
         pdf_viewer_page()
