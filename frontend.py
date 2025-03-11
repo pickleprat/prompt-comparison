@@ -101,21 +101,27 @@ def rag_page():
         st.markdown("**Output for Engineered Prompt:**")
         if "markdown_pages" in st.session_state: 
             with st.spinner("Output for Engineered prompt..."): 
-                engineered_prompt = (st.session_state.engineered_prompt + "### PDF CONTENT###\n" + ".".join(st.session_state.markdown_pages)) 
-                response = client.chat.completions.create(
-                    model=model, 
-                    temperature=0.1, 
-                    messages=[{
-                        "role": "user", 
-                        "content": engineered_prompt, 
-                    }], 
-                ) 
+                try: 
+                    engineered_prompt = (st.session_state.engineered_prompt + "### PDF CONTENT###\n" + ".".join(st.session_state.markdown_pages)) 
+                    response = client.chat.completions.create(
+                        model=model, 
+                        temperature=0.1, 
+                        messages=[{
+                            "role": "user", 
+                            "content": engineered_prompt, 
+                        }], 
+                    ) 
 
-            response_content = response.choices[0].message.content
-            if re.findall(r"<output>(.*?)</output>", response_content, re.DOTALL): 
-                json_content : str = re.findall(r"<output>(.*?)</output>", response_content, re.DOTALL)[0]
-                js_dict : dict = json.loads(json_content) 
-                st.json(js_dict) 
+                    response_content = response.choices[0].message.content
+                    if re.findall(r"<output>(.*?)</output>", response_content, re.DOTALL): 
+                        json_content : str = re.findall(r"<output>(.*?)</output>", response_content, re.DOTALL)[0]
+                        if json_content.startswith("```json"): 
+                            json_content = json_content.split("```json")[1].split("```")[0]
+
+                        js_dict : dict = json.loads(json_content) 
+                        st.json(js_dict) 
+                except Exception as e: 
+                    st.markdown(response.choices[0].message.content)
 
 def main():
     st.sidebar.title("Navigation")
