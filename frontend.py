@@ -10,9 +10,7 @@ import json
 import pymupdf4llm
 import tempfile 
 
-
-
-dotenv.load_dotenv()
+dotenv.load_dotenv(override=True)
 
 st.set_page_config(layout="wide") 
 
@@ -81,35 +79,37 @@ def rag_page():
         st.markdown("**Output for User Prompt:**")
         if normal_prompt:
             st.write(f"Processed output for: {normal_prompt}")
-            if "markdown_pages" in st.session_state: 
-                normal_prompt = (normal_prompt + "### TEXT CONTENT ###\n" +  
-                    ".".join(st.session_state.markdown_pages) ) 
+            with st.spinner("Normal text output..."): 
+                if "markdown_pages" in st.session_state: 
+                    normal_prompt = (normal_prompt + "### TEXT CONTENT ###\n" +  
+                        ".".join(st.session_state.markdown_pages) ) 
 
-                response = client.chat.completions.create(
-                    model=model, 
-                    temperature=0.1, 
-                    messages=[{
-                        "role": "user", 
-                        "content": normal_prompt, 
-                    }], 
-                ) 
+                    response = client.chat.completions.create(
+                        model=model, 
+                        temperature=0.1, 
+                        messages=[{
+                            "role": "user", 
+                            "content": normal_prompt, 
+                        }], 
+                    ) 
 
-                st.markdown(response.choices[0].message.content) 
+                    st.markdown(response.choices[0].message.content) 
 
         else:
             st.write("No user prompt provided.")
     with out_col2:
         st.markdown("**Output for Engineered Prompt:**")
         if "markdown_pages" in st.session_state: 
-            engineered_prompt = (st.session_state.engineered_prompt + "### PDF CONTENT###\n" + ".".join(st.session_state.markdown_pages)) 
-            response = client.chat.completions.create(
-                model=model, 
-                temperature=0.1, 
-                messages=[{
-                    "role": "user", 
-                    "content": engineered_prompt, 
-                }], 
-            ) 
+            with st.spinner("Output for Engineered prompt..."): 
+                engineered_prompt = (st.session_state.engineered_prompt + "### PDF CONTENT###\n" + ".".join(st.session_state.markdown_pages)) 
+                response = client.chat.completions.create(
+                    model=model, 
+                    temperature=0.1, 
+                    messages=[{
+                        "role": "user", 
+                        "content": engineered_prompt, 
+                    }], 
+                ) 
 
             response_content = response.choices[0].message.content
             if re.findall(r"<output>(.*?)</output>", response_content, re.DOTALL): 
