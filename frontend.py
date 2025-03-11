@@ -136,31 +136,72 @@ def rag_page():
 
         else:
             st.write("No user prompt provided.")
+    # with out_col2:
+    #     st.markdown("**Output for Engineered Prompt:**")
+    #     if "markdown_pages" in st.session_state: 
+    #         with st.spinner("Output for Engineered prompt..."): 
+    #             response = client.chat.completions.create(
+    #                 model=model, 
+    #                 temperature=0.1, 
+    #                 messages=[{
+    #                     "role": "user", 
+    #                     "content": engineered_prompt, 
+    #                 }], 
+    #             ) 
+
+    #             print(response.choices[0].message.content)
+    #             try: 
+    #                 engineered_prompt = (st.session_state.engineered_prompt + "### PDF CONTENT###\n" + ".".join(st.session_state.markdown_pages)) 
+
+    #                 response_content = response.choices[0].message.content
+    #                 if re.findall(r"<output>(.*?)</output>", response_content, re.DOTALL): 
+    #                     json_content : str = re.findall(r"<output>(.*?)</output>", response_content, re.DOTALL)[0]
+    #                     if json_content.startswith("```json"): 
+    #                         json_content = json_content.split("```json")[1].split("```")[0]
+
+    #                     js_dict : dict = json.loads(json_content) 
+    #                     st.json(js_dict) 
+    #             except Exception as e: 
+    #                 st.markdown(response.choices[0].message.content)
     with out_col2:
         st.markdown("**Output for Engineered Prompt:**")
-        if "markdown_pages" in st.session_state: 
-            with st.spinner("Output for Engineered prompt..."): 
-                response = client.chat.completions.create(
-                    model=model, 
-                    temperature=0.1, 
-                    messages=[{
-                        "role": "user", 
-                        "content": engineered_prompt, 
-                    }], 
-                ) 
-                try: 
-                    engineered_prompt = (st.session_state.engineered_prompt + "### PDF CONTENT###\n" + ".".join(st.session_state.markdown_pages)) 
-
-                    response_content = response.choices[0].message.content
-                    if re.findall(r"<output>(.*?)</output>", response_content, re.DOTALL): 
-                        json_content : str = re.findall(r"<output>(.*?)</output>", response_content, re.DOTALL)[0]
-                        if json_content.startswith("```json"): 
-                            json_content = json_content.split("```json")[1].split("```")[0]
-
-                        js_dict : dict = json.loads(json_content) 
-                        st.json(js_dict) 
-                except Exception as e: 
-                    st.markdown(response.choices[0].message.content)
+        with st.spinner("Output for Engineered prompt..."):
+            # Make sure engineered_prompt is the actual engineered prompt from the state
+            # not just the variable name
+            actual_prompt_to_send = st.session_state.engineered_prompt
+            
+            # Add PDF content if available
+            if "markdown_pages" in st.session_state:
+                actual_prompt_to_send += "### PDF CONTENT###\n" + ".".join(st.session_state.markdown_pages)
+            
+            # Make API call with the actual prompt content
+            response = client.chat.completions.create(
+                model=model, 
+                temperature=0.1, 
+                messages=[{
+                    "role": "user", 
+                    "content": actual_prompt_to_send, 
+                }], 
+            )
+            
+            # Print response to console
+            print(f"Sending prompt: {actual_prompt_to_send[:100]}...")  # Print first 100 chars of prompt
+            print(f"Response: {response.choices[0].message.content}")
+            
+            # Display the response
+            try:
+                response_content = response.choices[0].message.content
+                if re.findall(r"<output>(.*?)</output>", response_content, re.DOTALL):
+                    json_content = re.findall(r"<output>(.*?)</output>", response_content, re.DOTALL)[0]
+                    if json_content.startswith("```json"):
+                        json_content = json_content.split("```json")[1].split("```")[0]
+                    js_dict = json.loads(json_content)
+                    st.json(js_dict)
+                else:
+                    st.code(response_content)
+            except Exception as e:
+                st.markdown(response.choices[0].message.content)
+                print(f"Error processing response: {e}")
 
 def main():
     st.sidebar.title("Navigation")
