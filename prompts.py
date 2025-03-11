@@ -20,7 +20,7 @@ You are a [expert-title]. Your goal is to [task].
 
 ### OUTPUT FORMAT ### 
 * Your output should be enclosed within <output></output> tags. 
-* Within the output tag should be a json dictionary. 
+* Within the output tag should be a stringifiable JSON dictionary. 
 // additional output details of how the json should be structured. 
 
 ```
@@ -35,5 +35,5 @@ You are a [expert-title]. Your goal is to [task].
 {}
 
 ### OUTPUT THE PROMPT SHOULD PROVIDE ### 
-The output should always contain a JSON dictionary
+The output should always be in JSON dictionary.  
 """
