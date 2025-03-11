@@ -87,6 +87,7 @@ def rag_page():
 
                 response = client.chat.completions.create(
                     model=model, 
+                    temperature=0.1, 
                     messages=[{
                         "role": "user", 
                         "content": normal_prompt, 
@@ -103,6 +104,7 @@ def rag_page():
             engineered_prompt = (st.session_state.engineered_prompt + "### PDF CONTENT###\n" + ".".join(st.session_state.markdown_pages)) 
             response = client.chat.completions.create(
                 model=model, 
+                temperature=0.1, 
                 messages=[{
                     "role": "user", 
                     "content": engineered_prompt, 
