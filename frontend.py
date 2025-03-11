@@ -1,6 +1,5 @@
 import streamlit as st
 from prompts import meta_prompt
-from streamlit_pdf_viewer import pdf_viewer
 import openai 
 import dotenv 
 import os 
